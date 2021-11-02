@@ -77,8 +77,42 @@ registerUser = async (req, res) => {
         res.status(500).send();
     }
 }
+loginUser = async (req, res) => {
+    try {
+        const { email, password} = req.body;
+        const existingUser = await User.findOne({ email: email, password: password});
+        if(existingUser) {
+            const token = auth.signToken(existingUser);
+            await res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none"
+            }).status(200).json({
+                success: true,
+                user: {
+                    firstName: existingUser.firstName,
+                    lastName: existingUser.lastName,
+                    email: existingUser.email
+                }
+            }).send();
+        }
+        else {
+            return res
+            .status(400)
+            .json({
+                success: false,
+                errorMessage: "Incorrect Credentials. Try Again."
+            })
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send();
+    }
+}
 
 module.exports = {
     getLoggedIn,
-    registerUser
+    registerUser, 
+    loginUser
 }
