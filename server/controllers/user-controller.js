@@ -80,31 +80,43 @@ registerUser = async (req, res) => {
 loginUser = async (req, res) => {
     try {
         const { email, password} = req.body;
-        const existingUser = await User.findOne({ email: email, password: password});
-        if(existingUser) {
-            const token = auth.signToken(existingUser);
-            await res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none"
-            }).status(200).json({
-                success: true,
-                user: {
-                    firstName: existingUser.firstName,
-                    lastName: existingUser.lastName,
-                    email: existingUser.email
-                }
-            }).send();
+        if (!email || !password) {
+            return res
+                .status(400)
+                .json({ errorMessage: "Please enter all required fields." });
         }
-        else {
+        const existingUser = await User.findOne({ email: email });
+        if(!existingUser) {
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    errorMessage: "Email Not Found. Create an Account. "
+                })
+        }
+        const passwordCorrect = await bcrypt.compare(password, existingUser.passwordHash);
+        if(!passwordCorrect) {
             return res
             .status(400)
             .json({
                 success: false,
-                errorMessage: "Incorrect Credentials. Try Again."
+                errorMessage: "Incorrect Password. Try Again. "
             })
         }
+        const token = auth.signToken(existingUser);
 
+        await res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        }).status(200).json({
+            success: true,
+            user: {
+                firstName: existingUser.firstName,
+                lastName: existingUser.lastName,
+                email: existingUser.email
+            }
+        }).send();
     } catch (err) {
         console.error(err);
         res.status(500).send();
