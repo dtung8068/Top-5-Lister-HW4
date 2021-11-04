@@ -12,7 +12,7 @@ getLoggedIn = async (req, res) => {
                 lastName: loggedInUser.lastName,
                 email: loggedInUser.email
             }
-        }).send();
+        }).send(); //HTTP Headers Sent ERROR.
     })
 }
 
@@ -122,9 +122,28 @@ loginUser = async (req, res) => {
         res.status(500).send();
     }
 }
+logoutUser = async (req, res) => {
+    auth.verify(req, res, async function () {
+        const loggedInUser = await User.findOne({ _id: req.userId });
+        const token = {};
+        await res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none"
+        }).status(200).json({
+            success: true,
+            user: {
+                firstName: loggedInUser.firstName,
+                lastName: loggedInUser.lastName,
+                email: loggedInUser.email
+            }
+        }).send();
+    })
+}
 
 module.exports = {
     getLoggedIn,
     registerUser, 
-    loginUser
+    loginUser,
+    logoutUser,
 }
