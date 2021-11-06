@@ -5,14 +5,16 @@ const bcrypt = require('bcryptjs')
 getLoggedIn = async (req, res) => {
     auth.verify(req, res, async function () {
         const loggedInUser = await User.findOne({ _id: req.userId });
-        return res.status(200).json({
-            loggedIn: true,
-            user: {
-                firstName: loggedInUser.firstName,
-                lastName: loggedInUser.lastName,
-                email: loggedInUser.email
-            }
-        }).send(); //HTTP Headers Sent ERROR.
+        if(loggedInUser) {
+            return res.status(200).json({
+                loggedIn: true,
+                user: {
+                    firstName: loggedInUser.firstName,
+                    lastName: loggedInUser.lastName,
+                    email: loggedInUser.email
+                }
+            }).send(); //HTTP Headers Sent ERROR.
+        }
     })
 }
 
@@ -22,21 +24,21 @@ registerUser = async (req, res) => {
         if (!firstName || !lastName || !email || !password || !passwordVerify) {
             return res
                 .status(400)
-                .json({ errorMessage: "Please enter all required fields." }).send();
+                .json({ errorMessage: "Please enter all required fields." });
         }
         if (password.length < 8) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "Please enter a password of at least 8 characters."
-                }).send();
+                });
         }
         if (password !== passwordVerify) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "Please enter the same password twice."
-                }).send();
+                });
         }
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
@@ -45,7 +47,7 @@ registerUser = async (req, res) => {
                 .json({
                     success: false,
                     errorMessage: "An account with this email address already exists."
-                }).send();
+                });
         }
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
@@ -70,10 +72,10 @@ registerUser = async (req, res) => {
                 lastName: savedUser.lastName,
                 email: savedUser.email
             }
-        }).send();
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).send();
+        res.status(500);
     }
 }
 loginUser = async (req, res) => {
@@ -115,7 +117,7 @@ loginUser = async (req, res) => {
                 lastName: existingUser.lastName,
                 email: existingUser.email
             }
-        }).send();
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send();
@@ -136,7 +138,7 @@ logoutUser = async (req, res) => {
                 lastName: loggedInUser.lastName,
                 email: loggedInUser.email
             }
-        }).send();
+        });
     })
 }
 

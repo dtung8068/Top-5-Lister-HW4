@@ -102,7 +102,7 @@ function AuthContextProvider(props) {
                 authReducer({
                     type: AuthActionType.REGISTER_USER,
                     payload: {
-                        user: null, 
+                        user: response.data.user, 
                         errorMessage: null
                     }
                 })
@@ -110,15 +110,20 @@ function AuthContextProvider(props) {
                 store.loadIdNamePairs();
             }
         } catch (err) {
-            authReducer({
-                type: AuthActionType.GET_LOGGED_IN,
-                payload: {
-                    user: null, 
-                    loggedIn: false,
-                    errorMessage: err.response.data.errorMessage,
-                    open: true
-                }
-            })
+            try {
+                authReducer({
+                    type: AuthActionType.GET_LOGGED_IN,
+                    payload: {
+                        user: null, 
+                        loggedIn: false,
+                        errorMessage: err.response.data.errorMessage,
+                        open: true
+                    }
+                })
+            } catch (err) {
+
+            }
+
         }
     }
     auth.loginUser = async function(userData, store) {
