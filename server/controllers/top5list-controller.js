@@ -105,6 +105,7 @@ getTop5Lists = async (req, res) => {
                 .status(404)
                 .json({ success: false, error: `Top 5 Lists not found` })
         }
+        
         return res.status(200).json({ success: true, data: top5Lists })
     }).catch(err => console.log(err))
 }
@@ -126,7 +127,8 @@ getTop5ListPairs = async (req, res) => {
                 let list = top5Lists[key];
                 let pair = {
                     _id: list._id,
-                    name: list.name
+                    name: list.name,
+                    ownerEmail: list.ownerEmail
                 };
                 pairs.push(pair);
             }
