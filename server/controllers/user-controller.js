@@ -22,21 +22,21 @@ registerUser = async (req, res) => {
         if (!firstName || !lastName || !email || !password || !passwordVerify) {
             return res
                 .status(400)
-                .json({ errorMessage: "Please enter all required fields." });
+                .json({ errorMessage: "Please enter all required fields." }).send();
         }
         if (password.length < 8) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "Please enter a password of at least 8 characters."
-                });
+                }).send();
         }
         if (password !== passwordVerify) {
             return res
                 .status(400)
                 .json({
                     errorMessage: "Please enter the same password twice."
-                })
+                }).send();
         }
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
@@ -45,9 +45,8 @@ registerUser = async (req, res) => {
                 .json({
                     success: false,
                     errorMessage: "An account with this email address already exists."
-                })
+                }).send();
         }
-
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);

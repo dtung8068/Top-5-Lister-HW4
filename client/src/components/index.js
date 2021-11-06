@@ -17,7 +17,7 @@ import WorkspaceScreen from './WorkspaceScreen'
 */
 export { 
     AppBanner, 
-    EditToolbar, 
+    EditToolbar,  
     HomeScreen,
     HomeWrapper,
     ListCard,

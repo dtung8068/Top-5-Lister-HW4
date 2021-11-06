@@ -29,7 +29,7 @@ export default function SignInSide() {
     auth.loginUser({
         email: formData.get('email'),
         password: formData.get('password'),
-    });
+    }, store);
   };
 
   return (
