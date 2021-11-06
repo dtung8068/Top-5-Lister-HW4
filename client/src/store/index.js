@@ -233,10 +233,17 @@ function GlobalStoreContextProvider(props) {
         const response = await api.getTop5ListPairs();
         if (response.data.success) {
             let pairsArray = response.data.idNamePairs;
+            for(let i = 0; i < pairsArray.length; i++) {
+                if(pairsArray[i].ownerEmail !== auth.user.email) {
+                    pairsArray.splice(i, 1);
+                    i--;
+                }
+            }
             storeReducer({
                 type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                 payload: pairsArray
             });
+            
         }
         else {
             console.log("API FAILED TO GET THE LIST PAIRS");
