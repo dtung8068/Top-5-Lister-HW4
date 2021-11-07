@@ -59,7 +59,7 @@ function GlobalStoreContextProvider(props) {
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore({
                     idNamePairs: payload.idNamePairs,
-                    currentList: payload.top5List,
+                    currentList: null, 
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
@@ -185,11 +185,16 @@ function GlobalStoreContextProvider(props) {
                         response = await api.getTop5ListPairs();
                         if (response.data.success) {
                             let pairsArray = response.data.idNamePairs;
+                            for(let i = 0; i < pairsArray.length; i++) {
+                                if(pairsArray[i].ownerEmail !== auth.user.email) {
+                                    pairsArray.splice(i, 1);
+                                    i--;
+                                }
+                            }
                             storeReducer({
                                 type: GlobalStoreActionType.CHANGE_LIST_NAME,
                                 payload: {
                                     idNamePairs: pairsArray,
-                                    top5List: top5List
                                 }
                             });
                         }
