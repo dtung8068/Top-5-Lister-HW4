@@ -45,13 +45,24 @@ function Top5Item(props) {
         console.log("handleDrop (sourceId, targetId): ( " + sourceId + ", " + targetId + ")");
 
         // UPDATE THE LIST
-        store.addMoveItemTransaction(sourceId, targetId);
+        if(sourceId !== String(targetId)) {
+            store.addMoveItemTransaction(sourceId, targetId);
+        }
+        else {
+            store.updateCurrentList();
+        }
+        
     }
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             let index = event.target.id.substring("list-".length);
             let text = event.target.value;
-            store.addUpdateItemTransaction(index-1, text);
+            if(store.currentList.items[index - 1] !== text) {
+                store.addUpdateItemTransaction(index-1, text);
+            }
+            else {
+                store.updateCurrentList();
+            }
             toggleEdit();
         }
     }
