@@ -15,6 +15,7 @@ getLoggedIn = async (req, res) => {
                 }
             }).send(); //HTTP Headers Sent ERROR.
         }
+        return;
     })
 }
 
