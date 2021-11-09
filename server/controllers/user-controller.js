@@ -13,7 +13,7 @@ getLoggedIn = async (req, res) => {
                     lastName: loggedInUser.lastName,
                     email: loggedInUser.email
                 }
-            }).send(); //HTTP Headers Sent ERROR.
+            }); //HTTP Headers Sent ERROR.
         }
         return;
     })
