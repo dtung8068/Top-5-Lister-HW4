@@ -40,6 +40,7 @@ const HomeScreen = () => {
             <div id="list-selector-heading">
             <Fab 
                 color="primary" 
+                disabled={store.isListNameEditActive}
                 aria-label="add"
                 id="add-list-button"
                 onClick={handleCreateNewList}
