@@ -1,6 +1,14 @@
 const Top5List = require('../models/top5list-model');
+const auth = require('../auth');
+const User = require('../models/user-model');
 
 createTop5List = (req, res) => {
+    if(!checkToken(req, res)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        })
+    }
     const body = req.body;
     if (!body) {
         return res.status(400).json({
@@ -31,9 +39,26 @@ createTop5List = (req, res) => {
             })
         })
 }
+checkToken = async (req, res) => {
+    auth.verify(req, res, async function () {
+        const loggedInUser = await User.findOne({ _id: req.userId });
+        if(loggedInUser) {
+            return true;
+        }
+        else {
+            return false;
+        }
+})
+}
 
 updateTop5List = async (req, res) => {
-    const body = req.body
+    if(!checkToken(req, res)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        })
+    }
+    const body = req.body;
     console.log("updateTop5List: " + JSON.stringify(body));
     if (!body) {
         return res.status(400).json({
@@ -74,6 +99,12 @@ updateTop5List = async (req, res) => {
 }
 
 deleteTop5List = async (req, res) => {
+    if(!checkToken(req, res)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        })
+    }
     Top5List.findById({ _id: req.params.id }, (err, top5List) => {
         if (err) {
             return res.status(404).json({
@@ -88,6 +119,12 @@ deleteTop5List = async (req, res) => {
 }
 
 getTop5ListById = async (req, res) => {
+    if(!checkToken(req, res)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        })
+    }
     await Top5List.findById({ _id: req.params.id }, (err, list) => {
         if (err) {
             return res.status(400).json({ success: false, error: err });
@@ -96,6 +133,12 @@ getTop5ListById = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getTop5Lists = async (req, res) => {
+    if(!checkToken(req, res)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        })
+    }
     await Top5List.find({}, (err, top5Lists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -110,6 +153,12 @@ getTop5Lists = async (req, res) => {
     }).catch(err => console.log(err))
 }
 getTop5ListPairs = async (req, res) => {
+    if(!checkToken(req, res)) {
+        return res.status(401).json({
+            success: false,
+            error: 'Unauthorized',
+        })
+    }
     await Top5List.find({ }, (err, top5Lists) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
@@ -143,5 +192,6 @@ module.exports = {
     deleteTop5List,
     getTop5Lists,
     getTop5ListPairs,
-    getTop5ListById
+    getTop5ListById,
+    checkToken
 }
