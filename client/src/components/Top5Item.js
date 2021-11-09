@@ -77,6 +77,10 @@ function Top5Item(props) {
         }
         setEditActive(newActive);
     }
+    let editStatus = false;
+    if (store.isItemEditActive) {
+        editStatus = true;
+    }
 
     let { index } = props;
 
@@ -132,7 +136,7 @@ function Top5Item(props) {
                 }}
             >
             <Box sx={{ p: 1 }}>
-                <IconButton onClick={handleToggleEdit} aria-label='edit'>
+                <IconButton disabled = {editStatus} onClick={handleToggleEdit} aria-label='edit'>
                     <EditIcon style={{fontSize:'48pt'}}  />
                 </IconButton>
             </Box>
